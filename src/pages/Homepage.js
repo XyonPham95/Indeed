@@ -1,18 +1,20 @@
-import React ,{useEffect} from 'react'
+import React from "react";
+import {
+  Jumbotron,
+  Container,
+  Card,
+  CardDeck,
+  Row,
+  Col,
+} from "react-bootstrap/";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Homepage() {
-    let [candidates,setcandidates] =[]
-
-    useEffect(async () => {
-        const url = `http://localhost:3003/candidates`;
-        const result = await fetch(url);
-        const data = await result.json();
-        console.log("candidates:", data);
-     }, [])
-
-    return (
-        <div>
-            <h1>This is our homepage</h1>
-        </div>
-    )
+  return (
+    <div>
+      <h1>This is the Homepage</h1>
+    </div>
+  );
 }

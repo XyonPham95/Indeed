@@ -1,64 +1,64 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
-import "bootstrap/dist/css/bootstrap.css";
-import {Route, Router, Switch, Redirect} from "react-router-dom";
-import Homepage from "./pages/Homepage.js";
-import CandidatePage from "./pages/CandidatePage.js";
-import CreateCandidate from "./pages/CreateCandidate.js";
+import "bootstrap/dist/css/bootstrap.min.css";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
+import { useSelector } from "react-redux";
 
-export default function App() {
-  let [user,setUser] = useState({isAuthenticated:true})
-    return(
+import Homepage from "./pages/Homepage";
+import CreateCandidatePage from "./pages/CreateCandidatePage";
+import AllCandidatePage from "./pages/AllCandidatePage";
+import CandidatePage from "./pages/CandidatePage";
+import LoginPage from "./pages/LoginPage";
+import NavBar from "./components/NavBar";
+import FourOhFourPage from "./pages/FourOhFourPage";
+
+function App() {
+  let user = useSelector((state) => state.user); //bring user info
+
+  let ProtectedRoute = ({ component: Component, ...rest }) => {
+    return (
+      <Route
+        {...rest}
+        render={(props) => {
+          if (user.authenticate === true) {
+            return <Component {...props} />;
+          } else {
+            return <Redirect to={{ pathname: "/accessdenied" }} />;
+          }
+        }}
+      />
+    );
+  };
+
+  return (
     <div>
-    <Router>
-    <Switch>
-    <Route path='/createcandidate' exact>
-            <CreateCandidate />
-          </Route>
-    <Route
-      exact
-      user={user}
-      path="/candidates"
-      component={CandidatePage}
-    />
+      <Router>
+        <NavBar />
+        <Switch>
+          <Route path="/createcandidate" component={CreateCandidatePage} />
+          <ProtectedRoute
+            path="/candidates/:id"
+            exact
+            component={CandidatePage}
+          />
+          <ProtectedRoute
+            path="/candidates"
+            exact
+            component={AllCandidatePage}
+          />
+          <Route path="/login" exact component={LoginPage} />
+          <Route path="/" exact component={Homepage} />
 
-    <Route path='/' exact>
-            <Homepage/>
-    </Route>
-    
-    <Route
-      user={user}
-      path="/candidates/:id"
-      component={CandidatePage}
-    />
-  </Switch>
-    </Router>
-  </div>
-  )}
+          <Route path="*" component={FourOhFourPage} />
+        </Switch>
+      </Router>
+    </div>
+  );
+}
 
-  const Guest = props => {
-    console.log("Guest props", props);
-    return (
-      <div>
-        <h1>This is a Guest Page</h1>
-      </div>
-    );
-  };
-  
-  function User(props) {
-    console.log("User props", props);
-    return (
-      <div>
-        <h1>This is a User Page</h1>
-      </div>
-    );
-  }
-  
-  const ProtectedRoute = props => {
-    console.log("ProtectedRoute props", props);
-    return props.authenticated ? (
-      <Route {...props} render={() => <User {...props} />} />
-    ) : (
-      <Redirect to="/guest" />
-    );
-  };
+export default App;
